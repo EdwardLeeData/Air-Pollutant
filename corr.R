@@ -1,24 +1,23 @@
-corr <- function(directory, threshold = 0){
-  filelist <- list.files(path = directory, pattern = ".csv", full.names = TRUE)
-  nobs <- numeric()
+corr <- function(directory, threshold = 0) {
   
-  for (i in 1:length(filelist)){
-    x <- read.csv(filelist[i])
-    csum <- sum(complete.cases(x))
-    if (csum > threshold) {
-      sulf <- x[which(!is.na(x$sulfate)), ]
-      nit <- x[which(!is.na(x$nitr))]
-      
-    }
-    sulf <- read.csv(filelist[i])
-    data <- read.csv(filelist[i])
-    sulf <- data[["sulfate"]]
-    nit <- data[["nitrate"]]
-    c <- cor(sulf, nit)
-    cornum <- c(cornum, c)
+  df = complete(directory)
+  ids = df[df["nobs"] > threshold, ]$id
+  corrr = numeric()
+  for (i in ids) {
+    
+    newRead = read.csv(paste(directory, "/", formatC(i, width = 3, flag = "0"), 
+                             ".csv", sep = ""))
+    dff = newRead[complete.cases(newRead), ]
+    corrr = c(corrr, cor(dff$sulfate, dff$nitrate))
   }
-  return(cornum)
+  return(corrr)
 }
-
-cr <- corr("C:/Users/edjyl/OneDrive/Desktop/specdata")
-head(cr)
+complete <- function(directory, id = 1:332) {
+  f <- function(i) {
+    data = read.csv(paste(directory, "/", formatC(i, width = 3, flag = "0"), 
+                          ".csv", sep = ""))
+    sum(complete.cases(data))
+  }
+  nobs = sapply(id, f)
+  return(data.frame(id, nobs))
+}

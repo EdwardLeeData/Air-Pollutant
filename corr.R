@@ -1,3 +1,7 @@
+# takes a directory of data files and a threshold for complete cases and calculates the correlation between sulfate and nitrate for monitor locations where the number of completely observed cases (on all variables) is greater than the threshold.
+# returns a vector of correlations for the monitors that meet the threshold requirement.
+
+
 corr <- function(directory, threshold = 0) {
   
   df = complete(directory)
